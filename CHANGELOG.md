@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Update GitHub workflows runner images.
+
 ## [2.2.0] 2024-12-10
 
 * Added audit logging via `os2web/os2web_audit`.
