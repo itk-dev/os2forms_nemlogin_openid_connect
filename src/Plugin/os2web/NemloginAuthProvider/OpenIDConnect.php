@@ -169,13 +169,16 @@ class OpenIDConnect extends AuthProviderBase {
    *   The response.
    */
   public function login() {
-    $info_page_url = Url::fromRoute('os2forms_nemlogin_openid_connect.info_page', [
-      'id' => $this->getPluginId(),
-    ])
-      ->toString(TRUE)
-      ->getGeneratedUrl();
 
-    return (new LocalRedirectResponse($info_page_url))->send();
+    if ("openid_connect_ad" === $this->getPluginId()) {
+      $info_page_url = Url::fromRoute('os2forms_nemlogin_openid_connect.info_page', [
+        'id' => $this->getPluginId(),
+      ])
+        ->toString(TRUE)
+        ->getGeneratedUrl();
+
+      return (new LocalRedirectResponse($info_page_url))->send();
+    }
 
     $token = $this->getToken();
     if (NULL === $token) {
