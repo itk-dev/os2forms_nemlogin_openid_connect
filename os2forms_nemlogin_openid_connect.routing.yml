@@ -25,3 +25,13 @@ os2forms_nemlogin_openid_connect.admin.settings:
     _title: 'OS2Forms NemLogin OpenID Connect settings'
   requirements:
     _permission: 'administer site configuration'
+
+os2forms_nemlogin_openid_connect.info_page:
+  path: '/info-page'
+  defaults:
+    _controller: 'Drupal\os2forms_nemlogin_openid_connect\Controller\OpenIDConnectController::infoPage'
+  requirements:
+    # Anonymous users must be able to access this route.
+    _access: 'TRUE'
+  options:
+    no_cache: 'TRUE'

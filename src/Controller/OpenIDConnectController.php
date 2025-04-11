@@ -21,6 +21,7 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -81,6 +82,24 @@ class OpenIDConnectController implements ContainerInjectionInterface {
     private readonly RendererInterface $renderer,
   ) {
     $this->setLogger($logger);
+  }
+
+  public function infoPage(): array {
+    $request = $this->requestStack->getCurrentRequest();
+    $pluginId = $request->query->get('id');
+
+    $redirect_url = Url::fromRoute('os2forms_nemlogin_openid_connect.openid_connect_authenticate', [
+      'id' => $pluginId,
+      OpenIDConnectController::QUERY_LOCATION_NAME => $request->getRequestUri(),
+    ])
+      ->toString(TRUE)
+      ->getGeneratedUrl();
+
+    // Render the template.
+    return [
+      '#theme' => 'os2forms-nemlogin-openid-connect-intermediary-info-page',
+      '#redirect_url' => $redirect_url,
+    ];
   }
 
   /**
