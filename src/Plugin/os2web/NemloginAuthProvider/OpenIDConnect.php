@@ -39,6 +39,10 @@ class OpenIDConnect extends AuthProviderBase {
   private const SESSION_TOKEN = 'os2forms_nemlogin_openid_connect.user_token';
 
   /**
+   * Plugin id for AD login
+   */
+  private const OPENIDCONNECT_AD = 'openid_connect_ad';
+  /**
    * Fetch only mode flag.
    *
    * @var bool
@@ -169,8 +173,10 @@ class OpenIDConnect extends AuthProviderBase {
    *   The response.
    */
   public function login() {
+    $request = $this->requestStack->getCurrentRequest();
 
-    if ("openid_connect_ad" === $this->getPluginId()) {
+    // If form requires AD-login, show info-page regarding AD-roles.
+    if (self::OPENIDCONNECT_AD === $this->getPluginId()) {
       $info_page_url = Url::fromRoute('os2forms_nemlogin_openid_connect.info_page', [
         'id' => $this->getPluginId(),
       ])
