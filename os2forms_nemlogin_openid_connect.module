@@ -11,6 +11,7 @@ use Drupal\os2forms_nemlogin_openid_connect\Helper\Settings;
 use Drupal\os2forms_nemlogin_openid_connect\Helper\WebformHelper;
 use Drupal\webform\WebformSubmissionInterface;
 
+
 /**
  * Implements hook_help().
  */
@@ -65,6 +66,11 @@ function os2forms_nemlogin_openid_connect_theme(array $existing, string $type, s
         'users' => NULL,
         'plugin' => NULL,
         'query' => NULL,
+      ],
+    ],
+    'os2forms-nemlogin-openid-connect-intermediary-info-page' => [
+      'variables' => [
+        'redirect_url' => NULL,
       ],
     ],
   ];
