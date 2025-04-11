@@ -29,6 +29,7 @@ use Symfony\Component\Yaml\Yaml;
  * )
  */
 class OpenIDConnect extends AuthProviderBase {
+
   use LoggerTrait;
   use LoggerAwareTrait;
 
@@ -96,7 +97,8 @@ class OpenIDConnect extends AuthProviderBase {
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     // Shamelessly lifted from Drupal\os2web_nemlogin\Plugin\AuthProviderBase.
     // Swapping config with a values from config object.
-    $configObject = $container->get('config.factory')->get(AuthProviderBaseSettingsForm::$configName);
+    $configObject = $container->get('config.factory')
+      ->get(AuthProviderBaseSettingsForm::$configName);
     if ($configurationSerialized = $configObject->get($plugin_id)) {
       $configuration = unserialize($configurationSerialized, ['allowed_classes' => FALSE]);
     }
@@ -167,7 +169,13 @@ class OpenIDConnect extends AuthProviderBase {
    *   The response.
    */
   public function login() {
-    $request = $this->requestStack->getCurrentRequest();
+    $info_page_url = Url::fromRoute('os2forms_nemlogin_openid_connect.info_page', [
+      'id' => $this->getPluginId(),
+    ])
+      ->toString(TRUE)
+      ->getGeneratedUrl();
+
+    return (new LocalRedirectResponse($info_page_url))->send();
 
     $token = $this->getToken();
     if (NULL === $token) {
@@ -275,13 +283,13 @@ class OpenIDConnect extends AuthProviderBase {
    */
   public function defaultConfiguration() {
     return parent::defaultConfiguration() + [
-      'nemlogin_openid_connect_discovery_url' => '',
-      'nemlogin_openid_connect_client_id' => '',
-      'nemlogin_openid_connect_client_secret' => '',
-      'nemlogin_openid_connect_fetch_once' => '',
-      'nemlogin_openid_connect_post_logout_redirect_uri' => '',
-      'nemlogin_openid_connect_user_claims' => '',
-    ];
+        'nemlogin_openid_connect_discovery_url' => '',
+        'nemlogin_openid_connect_client_id' => '',
+        'nemlogin_openid_connect_client_secret' => '',
+        'nemlogin_openid_connect_fetch_once' => '',
+        'nemlogin_openid_connect_post_logout_redirect_uri' => '',
+        'nemlogin_openid_connect_user_claims' => '',
+      ];
   }
 
   /**
