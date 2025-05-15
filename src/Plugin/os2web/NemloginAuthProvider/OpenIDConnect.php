@@ -45,7 +45,7 @@ class OpenIDConnect extends AuthProviderBase {
   public const CLIENT_SECRET = 'nemlogin_openid_connect_client_secret';
 
 
-    /**
+  /**
    * Fetch only mode flag.
    *
    * @var bool
