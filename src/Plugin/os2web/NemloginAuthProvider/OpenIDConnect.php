@@ -44,7 +44,8 @@ class OpenIDConnect extends AuthProviderBase {
   public const CLIENT_ID = 'nemlogin_openid_connect_client_id';
   public const CLIENT_SECRET = 'nemlogin_openid_connect_client_secret';
 
-  /**
+
+    /**
    * Fetch only mode flag.
    *
    * @var bool
@@ -415,6 +416,7 @@ class OpenIDConnect extends AuthProviderBase {
     }
 
     $redirectUrl = $form_state->getValue(self::POST_LOGOUT_REDIRECT_URI);
+
     try {
       UrlHelper::isExternal($redirectUrl) ? Url::fromUri($redirectUrl) : Url::fromUserInput($redirectUrl);
     }
