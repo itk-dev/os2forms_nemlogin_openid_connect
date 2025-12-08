@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## [2.3.0] 2025-12-08 
+## [2.3.0] 2025-12-08
 
 * [PR-20](https://github.com/itk-dev/os2forms_nemlogin_openid_connect/pull/20)
   Added support for Key.
