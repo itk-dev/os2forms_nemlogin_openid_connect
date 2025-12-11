@@ -32,10 +32,18 @@ class OpenIDConnect extends AuthProviderBase {
   use LoggerTrait;
   use LoggerAwareTrait;
 
-  /**
-   * Session name for storing OIDC user token.
-   */
-  private const SESSION_TOKEN = 'os2forms_nemlogin_openid_connect.user_token';
+  public const SESSION_TOKEN = 'os2forms_nemlogin_openid_connect.user_token';
+  public const KEY = 'nemlogin_openid_connect_key';
+  public const SECRET_PROVIDER = 'secret_provider';
+  public const PROVIDER_TYPE_FORM = 'form';
+  public const PROVIDER_TYPE_KEY = 'key';
+  public const FETCH_ONCE = 'nemlogin_openid_connect_fetch_once';
+  public const POST_LOGOUT_REDIRECT_URI = 'nemlogin_openid_connect_post_logout_redirect_uri';
+  public const USER_CLAIMS = 'nemlogin_openid_connect_user_claims';
+  public const DISCOVERY_URL = 'nemlogin_openid_connect_discovery_url';
+  public const CLIENT_ID = 'nemlogin_openid_connect_client_id';
+  public const CLIENT_SECRET = 'nemlogin_openid_connect_client_secret';
+
 
   /**
    * Fetch only mode flag.
@@ -115,8 +123,8 @@ class OpenIDConnect extends AuthProviderBase {
    * {@inheritdoc}
    */
   public function isInitialized() {
-    $configuration = $configuration = $this->getConfiguration();
-    if (!empty($configuration['nemlogin_openid_connect_discovery_url'])) {
+    $configuration = $this->getConfiguration();
+    if (!empty($configuration[self::DISCOVERY_URL])) {
       return TRUE;
     }
 
@@ -275,12 +283,14 @@ class OpenIDConnect extends AuthProviderBase {
    */
   public function defaultConfiguration() {
     return parent::defaultConfiguration() + [
-      'nemlogin_openid_connect_discovery_url' => '',
-      'nemlogin_openid_connect_client_id' => '',
-      'nemlogin_openid_connect_client_secret' => '',
-      'nemlogin_openid_connect_fetch_once' => '',
-      'nemlogin_openid_connect_post_logout_redirect_uri' => '',
-      'nemlogin_openid_connect_user_claims' => '',
+      self::SECRET_PROVIDER => self::PROVIDER_TYPE_FORM,
+      self::DISCOVERY_URL => '',
+      self::CLIENT_ID => '',
+      self::CLIENT_SECRET => '',
+      self::KEY => '',
+      self::FETCH_ONCE => '',
+      self::POST_LOGOUT_REDIRECT_URI => '',
+      self::USER_CLAIMS => '',
     ];
   }
 
@@ -291,47 +301,99 @@ class OpenIDConnect extends AuthProviderBase {
    * @phpstan-return array<string, mixed>
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
-    $form['nemlogin_openid_connect_discovery_url'] = [
+
+    $form[self::SECRET_PROVIDER] = [
+      '#type' => 'select',
+      '#title' => $this->t('Provider'),
+      '#options' => [
+        self::PROVIDER_TYPE_FORM => $this->t('Form'),
+        self::PROVIDER_TYPE_KEY => $this->t('Key'),
+      ],
+      '#default_value' => $this->configuration[self::SECRET_PROVIDER] ?? self::PROVIDER_TYPE_FORM,
+    ];
+
+    $form[self::DISCOVERY_URL] = [
       '#type' => 'textfield',
       '#title' => $this->t('OpenID Connect Discovery url'),
       // Our urls are very long.
       '#maxlength' => 256,
-      '#required' => TRUE,
-      '#default_value' => $this->configuration['nemlogin_openid_connect_discovery_url'] ?? NULL,
+      '#default_value' => $this->configuration[self::DISCOVERY_URL] ?? NULL,
       '#description' => $this->t('OpenID Connect Discovery url (cf. <a href="https://swagger.io/docs/specification/authentication/openid-connect-discovery/">https://swagger.io/docs/specification/authentication/openid-connect-discovery/</a>)'),
+      '#states' => [
+        'visible' => [
+          [':input[name="secret_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+        ],
+        'required' => [
+          [':input[name="secret_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+        ],
+      ],
     ];
-    $form['nemlogin_openid_connect_client_id'] = [
+
+    $form[self::CLIENT_ID] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client id'),
-      '#required' => TRUE,
-      '#default_value' => $this->configuration['nemlogin_openid_connect_client_id'] ?? NULL,
+      '#default_value' => $this->configuration[self::CLIENT_ID] ?? NULL,
+      '#states' => [
+        'visible' => [
+          [':input[name="secret_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+        ],
+        'required' => [
+          [':input[name="secret_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+        ],
+      ],
     ];
-    $form['nemlogin_openid_connect_client_secret'] = [
+
+    $form[self::CLIENT_SECRET] = [
       '#type' => 'textfield',
       '#title' => $this->t('Client secret'),
-      '#required' => TRUE,
-      '#default_value' => $this->configuration['nemlogin_openid_connect_client_secret'] ?? NULL,
+      '#default_value' => $this->configuration[self::CLIENT_SECRET] ?? NULL,
+      '#states' => [
+        'visible' => [
+          [':input[name="secret_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+        ],
+        'required' => [
+          [':input[name="secret_provider"]' => ['value' => self::PROVIDER_TYPE_FORM]],
+        ],
+      ],
     ];
-    $form['nemlogin_openid_connect_fetch_once'] = [
+
+    $form[self::KEY] = [
+      '#type' => 'key_select',
+      '#key_filters' => [
+        'type' => 'os2web_key_oidc',
+      ],
+      '#title' => $this->t('Key'),
+      '#default_value' => $this->configuration[self::KEY] ?? NULL,
+      '#states' => [
+        'visible' => [
+          [':input[name="secret_provider"]' => ['value' => self::PROVIDER_TYPE_KEY]],
+        ],
+        'required' => [
+          [':input[name="secret_provider"]' => ['value' => self::PROVIDER_TYPE_KEY]],
+        ],
+      ],
+    ];
+
+    $form[self::FETCH_ONCE] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Use fetch only mode.'),
-      '#default_value' => $this->configuration['nemlogin_openid_connect_fetch_once'] ?? FALSE,
+      '#default_value' => $this->configuration[self::FETCH_ONCE] ?? FALSE,
       '#description' => $this->t('User will be logged out immediately after login. User data will be removed from session after first retrieving'),
     ];
 
-    $form['nemlogin_openid_connect_post_logout_redirect_uri'] = [
+    $form[self::POST_LOGOUT_REDIRECT_URI] = [
       '#type' => 'textfield',
       '#title' => $this->t('Post logout redirect url'),
       '#required' => TRUE,
-      '#default_value' => $this->configuration['nemlogin_openid_connect_post_logout_redirect_uri'] ?? NULL,
+      '#default_value' => $this->configuration[self::POST_LOGOUT_REDIRECT_URI] ?? NULL,
       '#description' => $this->t('Url to redirect to after logout. Can be an internal path, e.g. <code>/node/87</code>, or an external url, e.g. <code>https://aarhus.dk</code>'),
     ];
 
-    $form['nemlogin_openid_connect_user_claims'] = [
+    $form[self::USER_CLAIMS] = [
       '#type' => 'textarea',
       '#title' => $this->t('User claims'),
       '#description' => $this->t('Describe user claims for use when comparing user values.<br/>Each line must be on the form <code>«claim»: «display name»</code>, e.g.<br/><br/><code>cpr: CPR-nummer<br/>email: E-mailadresse</code>'),
-      '#default_value' => $this->configuration['nemlogin_openid_connect_user_claims'] ?? NULL,
+      '#default_value' => $this->configuration[self::USER_CLAIMS] ?? NULL,
     ];
 
     return $form;
@@ -343,27 +405,32 @@ class OpenIDConnect extends AuthProviderBase {
    * @phpstan-param array<string, mixed> $form
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state): void {
-    $url = $form_state->getValue('nemlogin_openid_connect_discovery_url');
 
-    if (!UrlHelper::isValid($url, TRUE)) {
-      $form_state->setErrorByName('nemlogin_openid_connect_discovery_url', $this->t('Url is not valid'));
+    if (self::PROVIDER_TYPE_FORM === $form_state->getValue(self::SECRET_PROVIDER)) {
+
+      $discoveryUrl = $form_state->getValue(self::DISCOVERY_URL);
+
+      if (!UrlHelper::isValid($discoveryUrl, TRUE)) {
+        $form_state->setErrorByName(self::DISCOVERY_URL, $this->t('Discovery url is not valid'));
+      }
     }
 
-    $url = $form_state->getValue('nemlogin_openid_connect_post_logout_redirect_uri');
+    $redirectUrl = $form_state->getValue(self::POST_LOGOUT_REDIRECT_URI);
+
     try {
-      UrlHelper::isExternal($url) ? Url::fromUri($url) : Url::fromUserInput($url);
+      UrlHelper::isExternal($redirectUrl) ? Url::fromUri($redirectUrl) : Url::fromUserInput($redirectUrl);
     }
     catch (\Exception $exception) {
-      $form_state->setErrorByName('nemlogin_openid_connect_post_logout_redirect_uri', $this->t('Post logout redirect url is not valid (@message)', ['@message' => $exception->getMessage()]));
+      $form_state->setErrorByName(self::POST_LOGOUT_REDIRECT_URI, $this->t('Post logout redirect url is not valid (@message)', ['@message' => $exception->getMessage()]));
     }
 
-    $claims = $form_state->getValue('nemlogin_openid_connect_user_claims');
+    $claims = $form_state->getValue(self::USER_CLAIMS);
     try {
       $values = Yaml::parse($claims);
       foreach ($values as $name => $value) {
         if (!is_string($name)) {
           $form_state->setErrorByName(
-            'nemlogin_openid_connect_user_claims',
+            self::USER_CLAIMS,
             $this->t('Name (@name) must be a string; found @type.', [
               '@name' => $name,
               '@type' => gettype($name),
@@ -373,7 +440,7 @@ class OpenIDConnect extends AuthProviderBase {
         }
         if (!is_string($value)) {
           $form_state->setErrorByName(
-            'nemlogin_openid_connect_user_claims',
+            self::USER_CLAIMS,
             $this->t('Value for “@name” must be a string; found @type.', [
               '@name' => $name,
               '@type' => gettype($value),
@@ -384,7 +451,7 @@ class OpenIDConnect extends AuthProviderBase {
       }
     }
     catch (ParseException $exception) {
-      $form_state->setErrorByName('nemlogin_openid_connect_user_claims', $this->t('Invalid claims (@message)', ['@message' => $exception->getMessage()]));
+      $form_state->setErrorByName(self::USER_CLAIMS, $this->t('Invalid claims (@message)', ['@message' => $exception->getMessage()]));
     }
   }
 
@@ -396,12 +463,14 @@ class OpenIDConnect extends AuthProviderBase {
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
     $configuration = $this->getConfiguration();
 
-    $configuration['nemlogin_openid_connect_discovery_url'] = $form_state->getValue('nemlogin_openid_connect_discovery_url');
-    $configuration['nemlogin_openid_connect_client_id'] = $form_state->getValue('nemlogin_openid_connect_client_id');
-    $configuration['nemlogin_openid_connect_client_secret'] = $form_state->getValue('nemlogin_openid_connect_client_secret');
-    $configuration['nemlogin_openid_connect_fetch_once'] = $form_state->getValue('nemlogin_openid_connect_fetch_once');
-    $configuration['nemlogin_openid_connect_post_logout_redirect_uri'] = $form_state->getValue('nemlogin_openid_connect_post_logout_redirect_uri');
-    $configuration['nemlogin_openid_connect_user_claims'] = $form_state->getValue('nemlogin_openid_connect_user_claims');
+    $configuration[self::SECRET_PROVIDER] = $form_state->getValue(self::SECRET_PROVIDER);
+    $configuration[self::DISCOVERY_URL] = $form_state->getValue(self::DISCOVERY_URL);
+    $configuration[self::CLIENT_ID] = $form_state->getValue(self::CLIENT_ID);
+    $configuration[self::CLIENT_SECRET] = $form_state->getValue(self::CLIENT_SECRET);
+    $configuration[self::KEY] = $form_state->getValue(self::KEY);
+    $configuration[self::FETCH_ONCE] = $form_state->getValue(self::FETCH_ONCE);
+    $configuration[self::POST_LOGOUT_REDIRECT_URI] = $form_state->getValue(self::POST_LOGOUT_REDIRECT_URI);
+    $configuration[self::USER_CLAIMS] = $form_state->getValue(self::USER_CLAIMS);
 
     $this->setConfiguration($configuration);
   }

@@ -8,7 +8,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
@@ -26,7 +26,7 @@ jobs:
         php-versions: [ '8.3' ]
         dependency-version: [ prefer-lowest, prefer-stable ]
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
@@ -56,9 +56,8 @@ jobs:
     strategy:
       matrix:
         php-versions: [ '8.3' ]
-        dependency-version: [ prefer-lowest, prefer-stable ]
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
@@ -76,6 +75,7 @@ jobs:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
+
       - name: Install Dependencies
         run: |
           composer install --no-interaction --no-progress
@@ -89,9 +89,8 @@ jobs:
     strategy:
       matrix:
         php-versions: [ '8.3' ]
-        dependency-version: [ prefer-lowest, prefer-stable ]
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
@@ -112,9 +111,9 @@ jobs:
       - name: Install Dependencies
         run: |
           composer install --no-interaction --no-progress
-      - name: twigcs
+      - name: twig-cs-fixer
         run: |
-          composer coding-standards-check/twigcs
+          composer coding-standards-check/twig-cs-fixer
 
   php-code-analysis:
     name: PHP code analysis
@@ -122,9 +121,8 @@ jobs:
     strategy:
       matrix:
         php-versions: [ '8.3' ]
-        dependency-version: [ prefer-lowest, prefer-stable ]
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
@@ -183,7 +181,7 @@ jobs:
     name: Markdown coding standards
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
