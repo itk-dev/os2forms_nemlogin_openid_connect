@@ -147,7 +147,7 @@ class OpenIDConnectController implements ContainerInjectionInterface {
   private function getOpenIdConfigurationProvider(): OpenIdConfigurationProvider {
     $pluginConfiguration = $this->plugin->getConfiguration();
 
-    if (OpenIDConnect::PROVIDER_TYPE_KEY === $pluginConfiguration[OpenIDConnect::PROVIDER_TYPE_KEY]) {
+    if (OpenIDConnect::PROVIDER_TYPE_FORM === $pluginConfiguration[OpenIDConnect::SECRET_PROVIDER]) {
       $discoveryUrl = $pluginConfiguration[OpenIDConnect::DISCOVERY_URL];
       $clientId = $pluginConfiguration[OpenIDConnect::CLIENT_ID];
       $clientSecret = $pluginConfiguration[OpenIDConnect::CLIENT_SECRET];

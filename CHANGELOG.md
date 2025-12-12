@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [2.3.1] 2025-12-12
+
+* Correctly identify form configured OIDC providers.
+
 ## [2.3.0] 2025-12-11
 
 * [PR-20](https://github.com/itk-dev/os2forms_nemlogin_openid_connect/pull/20)
@@ -37,7 +41,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Allowed multiple providers.
 
-[Unreleased]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.3.0...HEAD
+[Unreleased]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.3.1...HEAD
+[2.3.1]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.3.0...2.3.1
 [2.3.0]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.2.1...2.3.0
 [2.2.1]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.2.0...2.2.1
 [2.2.0]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.1.0...2.2.0
