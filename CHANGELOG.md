@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [2.4.0] 2026-02-26
+
+* Use unique token keys for OIDC providers.
+
 ## [2.3.1] 2025-12-12
 
 * Correctly identify form configured OIDC providers.

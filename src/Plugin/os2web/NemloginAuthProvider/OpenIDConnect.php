@@ -239,7 +239,7 @@ class OpenIDConnect extends AuthProviderBase {
    * @phpstan-param array<string, mixed> $token
    */
   public function setToken(array $token): self {
-    $this->session->set(self::SESSION_TOKEN, $token);
+    $this->session->set($this->getTokenKey(), $token);
 
     return $this;
   }
@@ -250,9 +250,10 @@ class OpenIDConnect extends AuthProviderBase {
    * @phpstan-return array<string, mixed>|null
    */
   private function getToken(bool $clear = FALSE): ?array {
-    $token = $this->session->get(self::SESSION_TOKEN);
+    $tokenKey = $this->getTokenKey();
+    $token = $this->session->get($tokenKey);
     if ($clear) {
-      $this->session->remove(self::SESSION_TOKEN);
+      $this->session->remove($tokenKey);
     }
 
     return $token;
@@ -534,5 +535,12 @@ class OpenIDConnect extends AuthProviderBase {
 
     return $keys;
   }
+
+    /**
+     * Get unique token key.
+     */
+    private function getTokenKey(): string {
+        return self::SESSION_TOKEN . '_' . $this->getPluginId();
+    }
 
 }
