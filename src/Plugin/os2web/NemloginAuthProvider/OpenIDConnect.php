@@ -536,11 +536,11 @@ class OpenIDConnect extends AuthProviderBase {
     return $keys;
   }
 
-    /**
-     * Get unique token key.
-     */
-    private function getTokenKey(): string {
-        return self::SESSION_TOKEN . '_' . $this->getPluginId();
-    }
+  /**
+   * Get unique token key.
+   */
+  private function getTokenKey(): string {
+    return self::SESSION_TOKEN . '_' . $this->getPluginId();
+  }
 
 }
