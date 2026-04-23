@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [2.4.1] 2026-04-21
+
+* Fetched providers as array when displaying them.
+
 ## [2.4.0] 2026-04-20
 
 * Added support for `itk-dev/openid-connect` 4.x.
@@ -45,7 +49,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Allowed multiple providers.
 
-[Unreleased]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.4.0...HEAD
+[Unreleased]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.4.1...HEAD
+[2.4.1]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.4.0...2.4.1
 [2.4.0]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.3.1...2.4.0
 [2.3.1]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.3.0...2.3.1
 [2.3.0]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.2.1...2.3.0
