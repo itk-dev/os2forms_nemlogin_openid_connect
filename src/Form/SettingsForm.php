@@ -75,7 +75,7 @@ final class SettingsForm extends FormBase {
     ];
 
     try {
-      $providers = Yaml::parse($providers);
+      $providers = $this->settings->getProvidersAsArray();
 
       $form['info'] = [
         '#type' => 'details',

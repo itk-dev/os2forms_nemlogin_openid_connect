@@ -8,9 +8,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## [2.4.0] 2026-02-26
+## [2.5.0] 2026-07-14
 
 * Use unique token keys for OIDC providers.
+
+## [2.4.1] 2026-04-21
+
+* Fetched providers as array when displaying them.
+
+## [2.4.0] 2026-04-20
+
+* Added support for `itk-dev/openid-connect` 4.x.
 
 ## [2.3.1] 2025-12-12
 
@@ -45,7 +53,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Allowed multiple providers.
 
-[Unreleased]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.3.1...HEAD
+[Unreleased]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.4.1...HEAD
+[2.4.1]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.4.0...2.4.1
+[2.4.0]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.3.1...2.4.0
 [2.3.1]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.3.0...2.3.1
 [2.3.0]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.2.1...2.3.0
 [2.2.1]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.2.0...2.2.1
