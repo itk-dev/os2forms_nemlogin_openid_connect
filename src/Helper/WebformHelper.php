@@ -6,9 +6,11 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\os2web_nemlogin\Plugin\AuthProviderInterface;
 use Drupal\os2web_nemlogin\Service\AuthProviderService;
 use Drupal\webform\Utility\WebformFormHelper;
 use Drupal\webform\WebformInterface;
+use Drupal\webform\WebformRequestInterface;
 use Drupal\webform\WebformSubmissionInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -42,12 +44,46 @@ class WebformHelper {
   private RouteMatchInterface $routeMatch;
 
   /**
+   * The webform request handler.
+   *
+   * @var \Drupal\webform\WebformRequestInterface
+   */
+  private WebformRequestInterface $webformRequest;
+
+  /**
    * Constructor.
    */
-  public function __construct(AuthProviderService $authProviderService, MessengerInterface $messenger, RouteMatchInterface $routeMatch) {
+  public function __construct(AuthProviderService $authProviderService, MessengerInterface $messenger, RouteMatchInterface $routeMatch, WebformRequestInterface $webformRequest) {
     $this->authProviderService = $authProviderService;
     $this->messenger = $messenger;
     $this->routeMatch = $routeMatch;
+    $this->webformRequest = $webformRequest;
+  }
+
+  /**
+   * Get auth provider plugin for a webform.
+   *
+   * Resolves the plugin from the webform's NemID settings (session_type),
+   * matching how os2forms_nemid resolves the plugin used for logging in, and
+   * falls back to the site-wide active plugin.
+   *
+   * @param \Drupal\webform\WebformInterface|null $webform
+   *   The webform. If not set, the webform of the current request, if any, is
+   *   used.
+   *
+   * @return \Drupal\os2web_nemlogin\Plugin\AuthProviderInterface
+   *   The auth provider plugin.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   */
+  public function getAuthProviderPlugin(?WebformInterface $webform = NULL): AuthProviderInterface {
+    $webform ??= $this->webformRequest->getCurrentWebform();
+    $settings = $webform?->getThirdPartySetting('os2forms', 'os2forms_nemid');
+    $sessionType = $settings['session_type'] ?? NULL;
+
+    return !empty($sessionType)
+      ? $this->authProviderService->getPluginInstance($sessionType)
+      : $this->authProviderService->getActivePlugin();
   }
 
   /**
@@ -131,7 +167,7 @@ class WebformHelper {
       $elementKey = $settings['element_key'];
       $userClaim = $settings['user_claim'];
 
-      $plugin = $this->authProviderService->getActivePlugin();
+      $plugin = $this->getAuthProviderPlugin($webform);
       if (!$plugin->isAuthenticated()) {
         return (string) $this->t('Not authenticated');
       }
@@ -163,7 +199,7 @@ class WebformHelper {
     $webform = $formObject->getEntity();
     $settings = $webform->getThirdPartySetting('os2forms', 'os2forms_nemid');
 
-    $options = $this->getUserClaimOptions();
+    $options = $this->getUserClaimOptions($webform);
 
     $form['third_party_settings']['os2forms']['os2forms_nemid']['os2forms_nemlogin_openid_connect']['authentication_settings'] = [
       '#type' => 'fieldset',
@@ -216,16 +252,19 @@ class WebformHelper {
   /**
    * Get user claim options.
    *
+   * @param \Drupal\webform\WebformInterface $webform
+   *   The webform.
+   *
    * @return array
    *   The user claim options.
    *
    * @phpstan-return array<string, mixed>
    */
-  private function getUserClaimOptions(): array {
-    $plugin = $this->authProviderService->getActivePlugin();
-    $claims = $plugin->getConfiguration()['nemlogin_openid_connect_user_claims'] ?? '';
-
+  private function getUserClaimOptions(WebformInterface $webform): array {
     try {
+      $plugin = $this->getAuthProviderPlugin($webform);
+      $claims = $plugin->getConfiguration()['nemlogin_openid_connect_user_claims'] ?? '';
+
       $value = Yaml::parse($claims);
       if (is_array($value)) {
         asort($value);

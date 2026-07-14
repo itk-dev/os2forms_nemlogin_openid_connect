@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Resolved auth provider plugin from webform NemID settings (`session_type`)
+  instead of always using the site-wide active plugin when setting
+  organisation user id and when checking webform access.
+
 ## [2.5.0] 2026-07-14
 
 * Use unique token keys for OIDC providers.
