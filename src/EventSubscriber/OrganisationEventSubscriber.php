@@ -3,8 +3,8 @@
 namespace Drupal\os2forms_nemlogin_openid_connect\EventSubscriber;
 
 use Drupal\Component\Plugin\Exception\PluginException;
+use Drupal\os2forms_nemlogin_openid_connect\Helper\WebformHelper;
 use Drupal\os2forms_organisation\Event\OrganisationUserIdEvent;
-use Drupal\os2web_nemlogin\Service\AuthProviderService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -13,17 +13,17 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class OrganisationEventSubscriber implements EventSubscriberInterface {
 
   /**
-   * The OS2Web Nemlogin authorization provider.
+   * The webform helper.
    *
-   * @var \Drupal\os2web_nemlogin\Service\AuthProviderService
+   * @var \Drupal\os2forms_nemlogin_openid_connect\Helper\WebformHelper
    */
-  protected AuthProviderService $authProvider;
+  protected WebformHelper $webformHelper;
 
   /**
    * The constructor.
    */
-  public function __construct(AuthProviderService $authProvider) {
-    $this->authProvider = $authProvider;
+  public function __construct(WebformHelper $webformHelper) {
+    $this->webformHelper = $webformHelper;
   }
 
   /**
@@ -54,11 +54,15 @@ class OrganisationEventSubscriber implements EventSubscriberInterface {
     }
 
     try {
-      $plugin = $this->authProvider->getActivePlugin();
+      // Use the plugin configured on the current webform.
+      $plugin = $this->webformHelper->getAuthProviderPlugin();
 
-      if ($plugin->isAuthenticated() && !empty($plugin->fetchValue('nameidentifier'))) {
-        /* @phpstan-ignore-next-line */
-        $event->setUserId($plugin->fetchValue('nameidentifier'));
+      if ($plugin->isAuthenticated()) {
+        $userId = $plugin->fetchValue('nameidentifier');
+        if (!empty($userId)) {
+          /* @phpstan-ignore-next-line */
+          $event->setUserId($userId);
+        }
       }
     }
     catch (PluginException $exception) {

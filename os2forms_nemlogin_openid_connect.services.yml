@@ -9,6 +9,7 @@ services:
       - '@os2web_nemlogin.auth_provider'
       - '@messenger'
       - '@current_route_match'
+      - '@webform.request'
 
   Drupal\os2forms_nemlogin_openid_connect\Helper\Settings:
     arguments:
@@ -16,6 +17,6 @@ services:
 
   Drupal\os2forms_nemlogin_openid_connect\EventSubscriber\OrganisationEventSubscriber:
     arguments:
-      - '@os2web_nemlogin.auth_provider'
+      - '@Drupal\os2forms_nemlogin_openid_connect\Helper\WebformHelper'
     tags:
       - { name: 'event_subscriber' }
