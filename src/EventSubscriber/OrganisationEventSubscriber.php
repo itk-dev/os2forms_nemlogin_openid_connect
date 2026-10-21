@@ -13,17 +13,12 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class OrganisationEventSubscriber implements EventSubscriberInterface {
 
   /**
-   * The webform helper.
-   *
-   * @var \Drupal\os2forms_nemlogin_openid_connect\Helper\WebformHelper
-   */
-  protected WebformHelper $webformHelper;
-
-  /**
    * The constructor.
    */
-  public function __construct(WebformHelper $webformHelper) {
-    $this->webformHelper = $webformHelper;
+  public function __construct(
+      protected WebformHelper $webformHelper
+  )
+  {
   }
 
   /**
@@ -65,7 +60,7 @@ class OrganisationEventSubscriber implements EventSubscriberInterface {
         }
       }
     }
-    catch (PluginException $exception) {
+    catch (PluginException) {
       return;
     }
   }

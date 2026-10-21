@@ -40,22 +40,22 @@ class OpenIDConnectController implements ContainerInjectionInterface {
   /**
    * Session name for storing auth provider login location.
    */
-  private const SESSION_LOGIN_LOCATION = 'os2forms_nemlogin_openid_connect.login_location';
+  private const string SESSION_LOGIN_LOCATION = 'os2forms_nemlogin_openid_connect.login_location';
 
   /**
    * Session name for storing OAuth2 state.
    */
-  private const SESSION_STATE = 'os2forms_nemlogin_openid_connect.oauth2state';
+  private const string SESSION_STATE = 'os2forms_nemlogin_openid_connect.oauth2state';
 
   /**
    * Session name for storing OAuth2 nonce.
    */
-  private const SESSION_NONCE = 'os2forms_nemlogin_openid_connect.oauth2nonce';
+  private const string SESSION_NONCE = 'os2forms_nemlogin_openid_connect.oauth2nonce';
 
   /**
    * Session name for storing is token.
    */
-  private const SESSION_ID_TOKEN = 'os2forms_nemlogin_openid_connect.id_token';
+  private const string SESSION_ID_TOKEN = 'os2forms_nemlogin_openid_connect.id_token';
 
   /**
    * Name of login destination query parameter.
@@ -315,7 +315,7 @@ class OpenIDConnectController implements ContainerInjectionInterface {
 
       return $url->toString(TRUE)->getGeneratedUrl();
     }
-    catch (\Exception $exception) {
+    catch (\Exception) {
       // Fallback if all other things fail.
       return '/';
     }

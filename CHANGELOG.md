@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Drupal 11 compatibility.
+
 ## [2.5.1] 2026-07-16
 
 * Resolved auth provider plugin from webform NemID settings (`session_type`)

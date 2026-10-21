@@ -2,12 +2,12 @@
 
 namespace Drupal\os2forms_nemlogin_openid_connect\Helper;
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\KeyValueStore\KeyValueFactoryInterface;
 use Drupal\Core\KeyValueStore\KeyValueStoreInterface;
 use Drupal\os2forms_nemlogin_openid_connect\Exception\InvalidSettingException;
 use Drupal\os2forms_nemlogin_openid_connect\Form\SettingsForm;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * General settings for os2forms_nemlogin_openid_connect.
@@ -18,7 +18,7 @@ final class Settings {
    *
    * @var \Drupal\Core\KeyValueStore\KeyValueStoreInterface
    */
-  private KeyValueStoreInterface $store;
+  private readonly KeyValueStoreInterface $store;
 
   /**
    * The key value collection name.
@@ -93,7 +93,7 @@ final class Settings {
    * @phpstan-return array<string, mixed>
    */
   public function getProvidersAsArray(): array {
-    $values = Yaml::parse($this->getProviders());
+    $values = Yaml::decode($this->getProviders());
 
     if (empty($values) || !is_array($values)) {
       return [];

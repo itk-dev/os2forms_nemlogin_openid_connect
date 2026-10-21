@@ -96,35 +96,21 @@ $settings['os2forms_nemlogin_openid_connect']['another-plugin-id']['local_test_u
 ];
 ```
 
-## Coding standards
+## Development
 
-Our coding are checked by GitHub Actions (cf. [.github/workflows/pr.yml](.github/workflows/pr.yml)). Use the commands
-below to run the checks locally.
+We use [DDEV Drupal Contrib](https://github.com/ddev/ddev-drupal-contrib) for development[^1].
 
-### PHP
+[^1]: The DDEV environment has been created by running
 
-```shell
-docker run --rm --volume ${PWD}:/app --workdir /app itkdev/php8.3-fpm composer install
-# Fix (some) coding standards issues
-docker run --rm --volume ${PWD}:/app --workdir /app itkdev/php8.3-fpm composer coding-standards-apply
-# Check that code adheres to the coding standards
-docker run --rm --volume ${PWD}:/app --workdir /app itkdev/php8.3-fpm composer coding-standards-check
-```
+      ```shell
+      ddev config --project-type=drupal11 --docroot=web
+      ddev dotenv set .ddev/.env.web --drupal-core '^11.4.10'
+      ```
 
-### Markdown
+Start the show by running
 
 ```shell
-docker run --rm --volume $PWD:/md peterdavehello/markdownlint markdownlint --ignore vendor --ignore LICENSE.md '**/*.md' --fix
-docker run --rm --volume $PWD:/md peterdavehello/markdownlint markdownlint --ignore vendor --ignore LICENSE.md '**/*.md'
+task ddev:start
 ```
 
-## Code analysis
-
-We use [PHPStan](https://phpstan.org/) for static code analysis.
-
-Running statis code analysis on a standalone Drupal module is a bit tricky, so we use a helper script to run the
-analysis:
-
-```shell
-docker run --rm --volume ${PWD}:/app --workdir /app itkdev/php8.3-fpm ./scripts/code-analysis
-```
+Run `task` to see other useful development tasks.
