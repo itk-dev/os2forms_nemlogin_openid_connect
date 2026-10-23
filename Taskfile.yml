@@ -68,7 +68,7 @@ tasks:
   coding-standards:twig:check:
     desc: "Apply and check coding standards for Twig"
     cmds:
-      - task: coding-standards:markdown:twig
+      - task: coding-standards:twig:apply
       # Cf. .github/workflows/module.yaml
       - ddev exec ./vendor/bin/twig-cs-fixer
 
