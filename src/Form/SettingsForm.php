@@ -2,6 +2,7 @@
 
 namespace Drupal\os2forms_nemlogin_openid_connect\Form;
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
@@ -9,8 +10,6 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\os2forms_nemlogin_openid_connect\Helper\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\OptionsResolver\Exception\ExceptionInterface as OptionsResolverException;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * OS2Forms Nemlogin OpenID Connect settings form.
@@ -18,25 +17,21 @@ use Symfony\Component\Yaml\Yaml;
 final class SettingsForm extends FormBase {
   use StringTranslationTrait;
 
-  public const PROVIDERS = 'providers';
-
-  /**
-   * The settings.
-   *
-   * @var \Drupal\os2forms_nemlogin_openid_connect\Helper\Settings
-   */
-  private Settings $settings;
+  public const string PROVIDERS = 'providers';
 
   /**
    * Constructor.
    */
-  public function __construct(Settings $settings) {
-    $this->settings = $settings;
+  public function __construct(
+      protected Settings $settings
+  )
+  {
   }
 
   /**
    * {@inheritdoc}
    */
+  #[\Override]
   public static function create(ContainerInterface $container): SettingsForm {
     return new static(
       $container->get(Settings::class),
@@ -105,7 +100,7 @@ final class SettingsForm extends FormBase {
         ),
       ];
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       // Ignore all exception.
     }
 
@@ -117,13 +112,14 @@ final class SettingsForm extends FormBase {
    *
    * @phpstan-param array<string, mixed> $form
    */
+  #[\Override]
   public function validateForm(array &$form, FormStateInterface $form_state): void {
     $providers = $form_state->getValue(self::PROVIDERS);
 
     try {
-      $values = Yaml::parse($providers);
+      $values = Yaml::decode($providers);
       if (!is_array($values)) {
-        throw new ParseException('Malformed YAML');
+        throw new \RuntimeException('Malformed YAML');
       }
       foreach ($values as $name => $value) {
         if (!is_string($name)) {
@@ -148,7 +144,7 @@ final class SettingsForm extends FormBase {
         }
       }
     }
-    catch (ParseException $exception) {
+    catch (\Exception $exception) {
       $form_state->setErrorByName(self::PROVIDERS, $this->t('Invalid providers (@message)', ['@message' => $exception->getMessage()]));
     }
   }

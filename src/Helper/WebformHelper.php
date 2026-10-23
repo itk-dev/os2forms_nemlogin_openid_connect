@@ -2,6 +2,7 @@
 
 namespace Drupal\os2forms_nemlogin_openid_connect\Helper;
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -12,7 +13,6 @@ use Drupal\webform\Utility\WebformFormHelper;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformRequestInterface;
 use Drupal\webform\WebformSubmissionInterface;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Webform helper.
@@ -20,7 +20,7 @@ use Symfony\Component\Yaml\Yaml;
 class WebformHelper {
   use StringTranslationTrait;
 
-  private const TEMPORARY_KEY = 'os2forms_nemlogin_openid_connect';
+  private const string TEMPORARY_KEY = 'os2forms_nemlogin_openid_connect';
 
   /**
    * The auth provider service.
@@ -28,20 +28,6 @@ class WebformHelper {
    * @var \Drupal\os2web_nemlogin\Service\AuthProviderService
    */
   private AuthProviderService $authProviderService;
-
-  /**
-   * The messenger.
-   *
-   * @var \Drupal\Core\Messenger\MessengerInterface
-   */
-  private MessengerInterface $messenger;
-
-  /**
-   * The route match.
-   *
-   * @var \Drupal\Core\Routing\RouteMatchInterface
-   */
-  private RouteMatchInterface $routeMatch;
 
   /**
    * The webform request handler.
@@ -53,10 +39,8 @@ class WebformHelper {
   /**
    * Constructor.
    */
-  public function __construct(AuthProviderService $authProviderService, MessengerInterface $messenger, RouteMatchInterface $routeMatch, WebformRequestInterface $webformRequest) {
+  public function __construct(AuthProviderService $authProviderService, private MessengerInterface $messenger, private RouteMatchInterface $routeMatch, WebformRequestInterface $webformRequest) {
     $this->authProviderService = $authProviderService;
-    $this->messenger = $messenger;
-    $this->routeMatch = $routeMatch;
     $this->webformRequest = $webformRequest;
   }
 
@@ -148,7 +132,7 @@ class WebformHelper {
         ]);
       }
     }
-    catch (\Exception $exception) {
+    catch (\Exception) {
       // Only the gods know what can go wrong in the code above.
     }
   }
@@ -265,14 +249,14 @@ class WebformHelper {
       $plugin = $this->getAuthProviderPlugin($webform);
       $claims = $plugin->getConfiguration()['nemlogin_openid_connect_user_claims'] ?? '';
 
-      $value = Yaml::parse($claims);
+      $value = Yaml::decode($claims);
       if (is_array($value)) {
         asort($value);
 
         return $value;
       }
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
     }
 
     return [];
@@ -294,13 +278,9 @@ class WebformHelper {
    */
   private function getElementKeyOptions(WebformInterface $webform): array {
     $elements = $webform->getElementsDecodedAndFlattened();
-    $textElements = array_filter($elements, static function (array $element) {
-      return in_array($element['#type'], ['textfield', 'hidden']);
-    });
+    $textElements = array_filter($elements, static fn(array $element) => in_array($element['#type'], ['textfield', 'hidden']));
 
-    return array_map(static function (array $element) {
-      return $element['#title'];
-    }, $textElements);
+    return array_map(static fn(array $element) => $element['#title'], $textElements);
   }
 
 }

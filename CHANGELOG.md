@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [2.6.0] 2026-10-23
+
+* Drupal 11 compatibility.
+
 ## [2.5.1] 2026-07-16
 
 * Resolved auth provider plugin from webform NemID settings (`session_type`)
@@ -59,7 +63,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Allowed multiple providers.
 
-[Unreleased]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.5.1...HEAD
+[Unreleased]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.6.0...HEAD
+[2.6.0]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.5.0...2.6.0
 [2.5.1]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.5.0...2.5.1
 [2.5.0]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.4.1...2.5.0
 [2.4.1]: https://github.com/itk-dev/os2forms_nemlogin_openid_connect/compare/2.4.0...2.4.1

@@ -2,6 +2,7 @@
 
 namespace Drupal\os2forms_nemlogin_openid_connect\Plugin\os2web\NemloginAuthProvider;
 
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\LocalRedirectResponse;
@@ -17,8 +18,6 @@ use Psr\Log\LoggerTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Defines a plugin for Nemlogin auth via OpenID Connect.
@@ -50,28 +49,14 @@ class OpenIDConnect extends AuthProviderBase {
    *
    * @var bool
    */
-  private $fetchOnce = FALSE;
-
-  /**
-   * The request stack.
-   *
-   * @var \Symfony\Component\HttpFoundation\RequestStack
-   */
-  private $requestStack;
-
-  /**
-   * The session.
-   *
-   * @var \Symfony\Component\HttpFoundation\Session\SessionInterface
-   */
-  private $session;
+  protected $fetchOnce = FALSE;
 
   /**
    * The audit logger.
    *
    * @var \Drupal\os2web_audit\Service\Logger
    */
-  private $auditLogger;
+  protected $auditLogger;
 
   /**
    * {@inheritdoc}
@@ -82,14 +67,12 @@ class OpenIDConnect extends AuthProviderBase {
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    RequestStack $requestStack,
-    SessionInterface $session,
+    protected RequestStack $requestStack,
+    protected SessionInterface $session,
     LoggerInterface $logger,
     Logger $auditLogger,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->session = $session;
-    $this->requestStack = $requestStack;
     $this->setLogger($logger);
     $this->auditLogger = $auditLogger;
 
@@ -427,7 +410,7 @@ class OpenIDConnect extends AuthProviderBase {
 
     $claims = $form_state->getValue(self::USER_CLAIMS);
     try {
-      $values = Yaml::parse($claims);
+      $values = Yaml::decode($claims);
       foreach ($values as $name => $value) {
         if (!is_string($name)) {
           $form_state->setErrorByName(
@@ -451,7 +434,7 @@ class OpenIDConnect extends AuthProviderBase {
         }
       }
     }
-    catch (ParseException $exception) {
+    catch (\Exception $exception) {
       $form_state->setErrorByName(self::USER_CLAIMS, $this->t('Invalid claims (@message)', ['@message' => $exception->getMessage()]));
     }
   }
